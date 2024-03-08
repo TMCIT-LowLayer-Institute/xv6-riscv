@@ -31,6 +31,8 @@
  *	@(#)types.h	8.3 (Berkeley) 1/5/94
  *	@(#)ansi.h	8.2 (Berkeley) 1/4/94
  */
+#ifndef _TYPES_H
+#define _TYPES_H
 
 /*
  * _ALIGN(p) rounds p (pointer or byte index) up to a correctly-aligned
@@ -56,7 +58,7 @@ typedef	unsigned short		__uint16_t;
 typedef	int			__int32_t;
 typedef	unsigned int		__uint32_t;
 /* LONGLONG */
-typedef	long long		__int64_t;
+typedef	long long int 	__int64_t;
 /* LONGLONG */
 typedef	unsigned long long	__uint64_t;
 
@@ -120,3 +122,5 @@ typedef	__builtin_va_list	__va_list;
 #else
 typedef	char *			__va_list;
 #endif
+
+#endif /* TYPES_H */

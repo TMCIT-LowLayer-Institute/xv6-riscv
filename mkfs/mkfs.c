@@ -1,21 +1,36 @@
+/*
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 #include <assert.h>
+*/
 
 #define stat xv6_stat  // avoid clash with host struct stat
-#include "kernel/types.h"
-#include "kernel/fs.h"
-#include "kernel/stat.h"
-#include "kernel/param.h"
+#include "../kernel/types.h"
+#include "../kernel/fs.h"
+#include "../kernel/stat.h"
+#include "../kernel/param.h"
+
+#include "string.h"
 
 #ifndef static_assert
 #define static_assert(a, b) do { switch (0) case 0: case (a): ; } while (0)
 #endif
 
 #define NINODES 200
+
+typedef unsigned int   uint;
+typedef unsigned short ushort;
+typedef unsigned char  uchar;
+
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+typedef unsigned int  uint32;
+typedef unsigned long uint64;
+
+typedef uint64 pde_t;
 
 // Disk layout:
 // [ boot block | sb block | log | inode blocks | free bit map | data blocks ]

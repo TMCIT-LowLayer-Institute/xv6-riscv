@@ -1,3 +1,6 @@
+#ifndef TYPES_H
+#define TYPES_H
+
 typedef unsigned int   uint;
 typedef unsigned short ushort;
 typedef unsigned char  uchar;
@@ -156,6 +159,4 @@ typedef	__uint_fast64_t		uint_fast64_t;
 #define	UINT32_C(_c)		__CONCAT(_c, U)
 #define	UINT64_C(_c)		__CONCAT(_c, ULL)
 
-/* 7.18.4.2 Macros for greatest-width integer constants. */
-#define	INTMAX_C(_c)		__CONCAT(_c, LL)
-#define	UINTMAX_C(_c)		__CONCAT(_c, ULL)
+#endif /* TYPES_H */
