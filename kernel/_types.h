@@ -120,16 +120,3 @@ typedef	__builtin_va_list	__va_list;
 #else
 typedef	char *			__va_list;
 #endif
-
-/* Wide character support types */
-#ifndef __cplusplus
-#ifdef __WCHAR_UNSIGNED__
-typedef	unsigned int		__wchar_t;
-#else
-typedef	int			__wchar_t;
-#endif
-#endif
-typedef	int			__wint_t;
-typedef	int			__rune_t;
-typedef	void *			__wctrans_t;
-typedef	void *			__wctype_t;
