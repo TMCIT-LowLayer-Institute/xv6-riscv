@@ -14,6 +14,8 @@ typedef unsigned long uint64;
 
 typedef uint64 pde_t;
 
+constexpr auto undefined = 0;
+
 #ifdef KERNEL
 
 #include "_types.h"
