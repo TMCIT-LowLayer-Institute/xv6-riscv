@@ -124,8 +124,32 @@ $U/_forktest: $U/forktest.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $U/_forktest $U/forktest.o $U/ulib.o $U/usys.o
 	$(OBJDUMP) -S $U/_forktest > $U/forktest.asm
 
+#mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
+#	/usr/local/bin/clang -Werror -Wall -I. -o mkfs/mkfs mkfs/mkfs.c -std=c23
+# Makefile
+# Directories to search for clang
+UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+
+ifeq ($(UNAME_S),Darwin)
+    ifeq ($(UNAME_M),x86_64)
+        # Intel Mac用の設定
+        MKFS_CC_PATH := $(shell ./find_clang)
+    else
+        # Apple Silicon Mac用の設定
+        MKFS_CC_PATH := $(shell ./find_clang_apple_silicon)
+    endif
+else
+    # Linux用の設定
+    MKFS_CC_PATH := $(shell ./find_clang_linux)
+endif
+
+# find_clangの出力を判定し、見つからない場合はデフォルトのパスを設定
+MKFS_CC := $(shell { ./find_clang || echo "/usr/local/bin/clang"; })
+MKFS_CFLAGS := -Werror -Wall -I. -std=c23
+
 mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
-	gcc -Werror -Wall -I. -o mkfs/mkfs mkfs/mkfs.c -std=c2x
+	$(MKFS_CC) $(MKFS_CFLAGS) -o mkfs/mkfs mkfs/mkfs.c
 
 # Prevent deletion of intermediate files, e.g. cat.o, after first build, so
 # that disk image changes after first build are persistent until clean.  More

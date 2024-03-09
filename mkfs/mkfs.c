@@ -23,14 +23,14 @@
 int nbitmap = FSSIZE/(BSIZE*8) + 1;
 int ninodeblocks = NINODES / IPB + 1;
 int nlog = LOGSIZE;
-int nmeta;    // Number of meta blocks (boot, sb, nlog, inode, bitmap)
-int nblocks;  // Number of data blocks
+int nmeta = undefined;    // Number of meta blocks (boot, sb, nlog, inode, bitmap)
+int nblocks = undefined;  // Number of data blocks
 
 int fsfd;
 struct superblock sb;
 char zeroes[BSIZE];
 uint freeinode = 1;
-uint freeblock;
+uint freeblock = undefined;
 
 
 void balloc(int);
@@ -46,7 +46,7 @@ void die(const char *);
 ushort
 xshort(ushort x)
 {
-  ushort y;
+  ushort y = 0;
   uchar *a = (uchar*)&y;
   a[0] = x;
   a[1] = x >> 8;
@@ -56,7 +56,7 @@ xshort(ushort x)
 uint
 xint(uint x)
 {
-  uint y;
+  uint y = undefined;
   uchar *a = (uchar*)&y;
   a[0] = x;
   a[1] = x >> 8;
@@ -68,8 +68,8 @@ xint(uint x)
 int
 main(int argc, char *argv[])
 {
-  int i = 0, cc = 0, fd = 0;
-  uint rootino = 0, inum = 0, off = 0;
+  int i = undefined, cc = undefined, fd = undefined;
+  uint rootino = undefined, inum = undefined, off = undefined;
   struct dirent de = {};
   char buf[BSIZE];
   struct dinode din = {};
@@ -197,8 +197,8 @@ void
 winode(uint inum, struct dinode *ip)
 {
   char buf[BSIZE];
-  uint bn;
-  struct dinode *dip;
+  uint bn = undefined;
+  struct dinode *dip = nullptr;
 
   bn = IBLOCK(inum, sb);
   rsect(bn, buf);
@@ -211,8 +211,8 @@ void
 rinode(uint inum, struct dinode *ip)
 {
   char buf[BSIZE];
-  uint bn;
-  struct dinode *dip;
+  uint bn = undefined;
+  struct dinode *dip = nullptr;
 
   bn = IBLOCK(inum, sb);
   rsect(bn, buf);
@@ -233,7 +233,7 @@ uint
 ialloc(ushort type)
 {
   uint inum = freeinode++;
-  struct dinode din;
+  struct dinode din = {};
 
   bzero(&din, sizeof(din));
   din.type = xshort(type);
@@ -247,7 +247,7 @@ void
 balloc(int used)
 {
   uchar buf[BSIZE];
-  int i;
+  int i = undefined;
 
   printf("balloc: first %d blocks have been allocated\n", used);
   assert(used < BSIZE*8);
@@ -265,11 +265,11 @@ void
 iappend(uint inum, void *xp, int n)
 {
   char *p = (char*)xp;
-  uint fbn, off, n1;
-  struct dinode din;
+  uint fbn = undefined, off = undefined, n1 = undefined;
+  struct dinode din = {};
   char buf[BSIZE];
   uint indirect[NINDIRECT];
-  uint x;
+  uint x = undefined;
 
   rinode(inum, &din);
   off = xint(din.size);

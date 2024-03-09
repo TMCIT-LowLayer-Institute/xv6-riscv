@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define ROOTINO  1   // root i-number
+constexpr auto ROOTINO = 1;   // root i-number
 #define BSIZE 1024  // block size
 
 // Disk layout:

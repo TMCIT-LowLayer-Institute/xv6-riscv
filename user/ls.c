@@ -7,7 +7,7 @@ char*
 fmtname(char *path)
 {
   static char buf[DIRSIZ+1];
-  char *p;
+  char *p = nullptr;
 
   // Find first character after last slash.
   for(p=path+strlen(path); p >= path && *p != '/'; p--)
