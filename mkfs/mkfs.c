@@ -135,6 +135,9 @@ main(int argc, char *argv[])
     else
       shortname = argv[i];
 
+    /*
+     * Skip assertion check for 'shortname' containing '/' since it is expected in certain cases.
+     */
     if (strcmp(shortname, "sys/lib/libsa/libsa.a") == 0)
     {
       printf("Skipping file: %s\n", shortname);
