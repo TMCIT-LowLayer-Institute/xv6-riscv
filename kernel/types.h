@@ -12,6 +12,8 @@ typedef unsigned long uint64;
 
 typedef uint64 pde_t;
 
+#ifdef KERNEL
+
 #include "_types.h"
 
 /*	$OpenBSD: stdint.h,v 1.11 2019/01/25 00:19:26 millert Exp $	*/
@@ -158,5 +160,7 @@ typedef	__uint_fast64_t		uint_fast64_t;
 #define	UINT16_C(_c)		(_c)
 #define	UINT32_C(_c)		__CONCAT(_c, U)
 #define	UINT64_C(_c)		__CONCAT(_c, ULL)
+
+#endif /* KERNEL */
 
 #endif /* TYPES_H */

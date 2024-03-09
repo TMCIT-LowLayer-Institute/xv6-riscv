@@ -27,9 +27,9 @@
 /*	Copyright (c) 1988 AT&T	*/
 /*	  All Rights Reserved  	*/
 
-#pragma ident	"%Z%%M%	%I%	%E% SMI"
-
-#pragma weak _memset = memset
+/*
+ * Copyright 2024 TMCIT-LowLayer-Institute. All rights reserved.
+ */
 
 #include "string.h"
 
@@ -38,7 +38,7 @@
  * Return sp.
  */
 void *
-memset(void *sp1, int c, size_t n)
+memset(void * const sp1, int const c, size_t n)
 {
 	if (n != 0) {
 		unsigned char *sp = sp1;

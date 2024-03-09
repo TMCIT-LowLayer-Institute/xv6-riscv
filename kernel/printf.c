@@ -2,8 +2,6 @@
 // formatted console output -- printf, panic.
 //
 
-#include <stdarg.h>
-
 #include "types.h"
 #include "param.h"
 #include "spinlock.h"
@@ -14,6 +12,8 @@
 #include "riscv.h"
 #include "defs.h"
 #include "proc.h"
+
+#include "../include/C/stdarg.h"
 
 volatile int panicked = 0;
 
@@ -29,8 +29,8 @@ static void
 printint(int xx, int base, int sign)
 {
   char buf[16];
-  int i;
-  uint x;
+  int i = 0;
+  uint x = 0;
 
   if(sign && (sign = xx < 0))
     x = -xx;
@@ -52,7 +52,7 @@ printint(int xx, int base, int sign)
 static void
 printptr(uint64 x)
 {
-  int i;
+  int i = 0;
   consputc('0');
   consputc('x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
@@ -64,7 +64,7 @@ void
 printf(char *fmt, ...)
 {
   va_list ap;
-  int i, c, locking;
+  int i = 0, c = 0, locking = 0;
   char *s;
 
   locking = pr.locking;

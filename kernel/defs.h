@@ -38,7 +38,7 @@ int             filewrite(struct file*, uint64, int n);
 void            fsinit(int);
 int             dirlink(struct inode*, char*, uint);
 struct inode*   dirlookup(struct inode*, char*, uint*);
-struct inode*   ialloc(uint, short);
+struct inode*   _ialloc(uint, short);
 struct inode*   idup(struct inode*);
 void            iinit();
 void            ilock(struct inode*);
@@ -77,7 +77,7 @@ int             piperead(struct pipe*, uint64, int);
 int             pipewrite(struct pipe*, uint64, int);
 
 // printf.c
-void            printf(char*, ...);
+void            printf(char *fmt, ...);
 void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
 
