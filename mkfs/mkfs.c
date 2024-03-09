@@ -138,13 +138,13 @@ main(int argc, char *argv[])
     /*
      * Skip assertion check for 'shortname' containing '/' since it is expected in certain cases.
      */
-    if (strcmp(shortname, "sys/lib/libsa/libsa.a") == 0)
+    if (strcmp(shortname, "sys/lib/libsa/*.h") == 0)
     {
       printf("Skipping file: %s\n", shortname);
       continue;
     }
 
-    if (strcmp(shortname, "sys/lib/libsa/libsa.a") != 0)
+    if (strcmp(shortname, "sys/lib/libsa/*.h") != 0)
       assert(index(shortname, '/') == 0);
     
     assert(index(shortname, '/') == 0);

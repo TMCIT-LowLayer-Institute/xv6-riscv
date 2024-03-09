@@ -29,9 +29,9 @@ OBJS = \
   $K/kernelvec.o \
   $K/plic.o \
   $K/virtio_disk.o
+  $(LIBSA)
 
-LIBSA = sys/lib/libsa/libsa.a
-LIBSA_OBJS = $(patsubst sys/lib/libsa/%.c, $U/%.o, $(wildcard sys/lib/libsa/*.c))
+#LIBSA_OBJS += $(STDLIB_OBJS)
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin
@@ -59,7 +59,7 @@ LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 
-CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL
+CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=199209 -D__XSI_VISIBLE=1
 CFLAGS += -MD
 CFLAGS += -mcmodel=medany
 CFLAGS += -ffreestanding -fno-common -nostdlib -mno-relax
@@ -76,10 +76,25 @@ endif
 
 LDFLAGS = -z max-page-size=4096
 
-$K/kernel: $(OBJS) $K/kernel.ld $U/initcode
-	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS) 
+# カーネルにリンクするライブラリの定義
+KERN_LIBS = $(LIBSA)
+
+# LIBSAのビルドルール
+LIBSA_DIR = sys/lib/libsa
+LIBSA_SRCS = $(wildcard $(LIBSA_DIR)/*.c)
+LIBSA_OBJS = $(patsubst $(LIBSA_DIR)/%.c, $(LIBSA_DIR)/%.o, $(LIBSA_SRCS))
+LIBSA = $(LIBSA_DIR)/libsa.a
+
+$(LIBSA): $(LIBSA_OBJS)
+	$(AR) rcs $@ $^
+
+$(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
+	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
+
+$K/kernel: $(OBJS) $(KERN_LIBS) $K/kernel.ld $U/initcode
+	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS) $(KERN_LIBS)
 	$(OBJDUMP) -S $K/kernel > $K/kernel.asm
-	$(OBJDUMP) -t $K/kernel | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $K/kernel.sym
+	$(OBJDUMP) -t $K/kernel | sed '1,/SYMBOL TABLE/d; s/ .*/ /; /^$$/d' > $K/kernel.sym
 
 $U/initcode: $U/initcode.S
 	$(CC) $(CFLAGS) -march=rv64g -nostdinc -I. -Ikernel -c $U/initcode.S -o $U/initcode.o
@@ -96,12 +111,6 @@ _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -T $U/user.ld -o $@ $^
 	$(OBJDUMP) -S $@ > $*.asm
 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
-
-$(LIBSA): $(LIBSA_OBJS)
-	$(AR) rcs $@ $^
-
-$U/%.o: sys/lib/libsa/%.c
-	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
 
 $U/usys.S : $U/usys.pl
 	perl $U/usys.pl > $U/usys.S
@@ -141,7 +150,6 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
-	$(LIBSA)
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
@@ -154,7 +162,8 @@ clean:
 	$U/initcode $U/initcode.out $K/kernel fs.img \
 	mkfs/mkfs .gdbinit \
         $U/usys.S \
-	$(UPROGS)
+	$(UPROGS) \
+	$(LIBSA_DIR)/*.d $(LIBSA_DIR)/*.o
 
 # try to generate a unique GDB port
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
