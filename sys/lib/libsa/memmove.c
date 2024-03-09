@@ -44,7 +44,7 @@ memmove(void * const s, void const* const s0, size_t n)
 {
 	if (n != 0) {
 		char *s1 = s;
-		const char *s2 = s0;
+		char const* s2 = s0;
 
 		if (s1 <= s2) {
 			do {
