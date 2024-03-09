@@ -18,6 +18,13 @@ The main contributors to xv6 include:
 
 We are also grateful for bug reports and patches from the open-source community.
 
+## Contributors
+
+The main contributors to xv6 include:
+
+- [unixtech-06](https://github.com/unixtech-06)
+- (Add other contributors as needed)
+
 **License**
 -----------
 
