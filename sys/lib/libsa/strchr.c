@@ -14,7 +14,7 @@
  * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
  * If applicable, add the following below this CDDL HEADER, with the
  * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright 2024 unixtech-06
+ * information: Portions Copyright [yyyy] [name of copyright owner]
  *
  * CDDL HEADER END
  */
@@ -30,22 +30,21 @@
 /*
  * Copyright 2024 TMCIT-LowLayer-Institute. All rights reserved.
  */
+#include "../../../kernel/_null.h"
 
-#include "string.h"
+#include <C/string.h>
 
 /*
- * Set an array of n chars starting at sp to the character c.
- * Return sp.
+ * Return the ptr in sp at which the character c appears;
+ * NULL if not found
  */
-void *
-memset(void * const sp1, int const c, size_t n)
-{
-	if (n != 0) {
-		unsigned char *sp = sp1;
-		do {
-			*sp++ = (unsigned char)c;
-		} while (--n != 0);
-	}
 
-	return (sp1);
+char *
+strchr(char const* sp, int c)
+{
+	do {
+		if (*sp == (char)c)
+			return ((char *)sp);
+	} while (*sp++);
+	return (NULL);
 }

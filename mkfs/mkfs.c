@@ -68,11 +68,11 @@ xint(uint x)
 int
 main(int argc, char *argv[])
 {
-  int i, cc, fd;
-  uint rootino, inum, off;
-  struct dirent de;
+  int i = 0, cc = 0, fd = 0;
+  uint rootino = 0, inum = 0, off = 0;
+  struct dirent de = {};
   char buf[BSIZE];
-  struct dinode din;
+  struct dinode din = {};
 
 
   static_assert(sizeof(int) == 4, "Integers must be 4 bytes!");
@@ -134,6 +134,15 @@ main(int argc, char *argv[])
       shortname = argv[i] + 5;
     else
       shortname = argv[i];
+
+    if (strcmp(shortname, "sys/lib/libsa/libsa.a") == 0)
+    {
+      printf("Skipping file: %s\n", shortname);
+      continue;
+    }
+
+    if (strcmp(shortname, "sys/lib/libsa/libsa.a") != 0)
+      assert(index(shortname, '/') == 0);
     
     assert(index(shortname, '/') == 0);
 

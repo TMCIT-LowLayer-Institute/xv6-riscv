@@ -32,7 +32,7 @@
  * SUCH DAMAGE.
  */
 
-#include "string.h"
+#include <C/string.h>
 
 /*
  * Copy s0 to s, always copy n bytes.
