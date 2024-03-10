@@ -30,8 +30,6 @@
  * SUCH DAMAGE.
  */
 
-#include <kernel/types.h>
-
 #include <C/string.h>
 
 #define wsize sizeof(u_long)

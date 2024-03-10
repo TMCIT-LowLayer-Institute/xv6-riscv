@@ -30,8 +30,6 @@
 /*
  * Copyright 2024 TMCIT-LowLayer-Institute. All rights reserved.
  */
-#include <kernel/types.h>
-
 #include <C/string.h>
 
 /*
