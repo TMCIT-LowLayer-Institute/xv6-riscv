@@ -30,8 +30,7 @@ OBJS = \
   $K/plic.o \
   $K/virtio_disk.o
   $(LIBSA)
-
-#LIBSA_OBJS += $(STDLIB_OBJS)
+  $(STDLIB)
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin
@@ -60,6 +59,7 @@ OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 
 CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=199209 -D__XSI_VISIBLE=1
+
 CFLAGS += -MD
 CFLAGS += -mcmodel=medany
 CFLAGS += -ffreestanding -fno-common -nostdlib -mno-relax
@@ -77,19 +77,35 @@ endif
 LDFLAGS = -z max-page-size=4096
 
 # カーネルにリンクするライブラリの定義
-KERN_LIBS = $(LIBSA)
+KERN_LIBS = $(LIBSA) $(STDLIB)
 
 # LIBSAのビルドルール
 LIBSA_DIR = sys/lib/libsa
 LIBSA_SRCS = $(wildcard $(LIBSA_DIR)/*.c)
 LIBSA_OBJS = $(patsubst $(LIBSA_DIR)/%.c, $(LIBSA_DIR)/%.o, $(LIBSA_SRCS))
-LIBSA = $(LIBSA_DIR)/libsa.a
 
+# STDLIBのビルドルール
+STDLIB_DIR = lib/libc/stdlib
+STDLIB_SRCS = $(wildcard $(STDLIB_DIR)/*.c)
+STDLIB_OBJS = $(patsubst $(STDLIB_DIR)/%.c, $(STDLIB_DIR)/%.o, $(STDLIB_SRCS))
+
+# LIBSA_OBJSをソースからオブジェクトに変換するルールの作成。
+$(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
+	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
+
+# LIBSAターゲットの作成とLIBSA_OBJSスタティックライブラリの生成。
+LIBSA = $(LIBSA_DIR)/libsa.a
 $(LIBSA): $(LIBSA_OBJS)
 	$(AR) rcs $@ $^
 
-$(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
-	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
+# STDLIB_OBJSをソースからオブジェクトに変換するルールを作成。
+$(STDLIB_DIR)/%.o: $(STDLIB_DIR)/%.c
+	$(CC) $(CFLAGS) -I./include -I./ -Wno-attributes -c $< -o $@
+
+# STDLIBターゲットを作り、STDLIB_OBJSからスタティックライブラリを生成。
+STDLIB = $(STDLIB_DIR)/stdlib.a
+$(STDLIB): $(STDLIB_OBJS)
+	$(AR) rcs $@ $^
 
 $K/kernel: $(OBJS) $(KERN_LIBS) $K/kernel.ld $U/initcode
 	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS) $(KERN_LIBS)
@@ -187,7 +203,8 @@ clean:
 	mkfs/mkfs .gdbinit \
         $U/usys.S \
 	$(UPROGS) \
-	$(LIBSA_DIR)/*.d $(LIBSA_DIR)/*.o $(LIBSA_DIR)/*.a
+	$(LIBSA_DIR)/*.d $(LIBSA_DIR)/*.o $(LIBSA_DIR)/*.a \
+	$(STDLIB_DIR)/*.d $(STDLIB_DIR)/*.o $(STDLIB_DIR)/*.a
 
 # try to generate a unique GDB port
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
