@@ -25,7 +25,7 @@
 #include "buf.h"
 
 struct bcache {
-    struct spinlock lock;
+        struct spinlock lock;
 	struct buf buf[NBUF];
 
 	/* 
