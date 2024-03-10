@@ -34,6 +34,8 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#ifdef KERNEL
+
 /*
  * _ALIGN(p) rounds p (pointer or byte index) up to a correctly-aligned
  * value for all data types (int, long, ...).   The result is an
@@ -122,5 +124,7 @@ typedef	__builtin_va_list	__va_list;
 #else
 typedef	char *			__va_list;
 #endif
+
+#endif /* KERNEL */
 
 #endif /* TYPES_H */

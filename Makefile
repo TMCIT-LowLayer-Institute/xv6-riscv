@@ -91,20 +91,24 @@ STDLIB_OBJS = $(patsubst $(STDLIB_DIR)/%.c, $(STDLIB_DIR)/%.o, $(STDLIB_SRCS))
 
 # LIBSA_OBJSをソースからオブジェクトに変換するルールの作成。
 $(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
+	@echo "\033[0;32mCompiling $< for LIBSA\033[0m"
 	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
 
 # LIBSAターゲットの作成とLIBSA_OBJSスタティックライブラリの生成。
 LIBSA = $(LIBSA_DIR)/libsa.a
 $(LIBSA): $(LIBSA_OBJS)
+	@echo "\033[0;34mCreating $@ library\033[0m"
 	$(AR) rcs $@ $^
 
 # STDLIB_OBJSをソースからオブジェクトに変換するルールを作成。
 $(STDLIB_DIR)/%.o: $(STDLIB_DIR)/%.c
+	@echo "\033[0;32mCompiling $< for STDLIB\033[0m"
 	$(CC) $(CFLAGS) -I./include -I./ -Wno-attributes -c $< -o $@
 
 # STDLIBターゲットを作り、STDLIB_OBJSからスタティックライブラリを生成。
 STDLIB = $(STDLIB_DIR)/stdlib.a
 $(STDLIB): $(STDLIB_OBJS)
+	@echo "\033[0;34mCreating $@ library\033[0m"
 	$(AR) rcs $@ $^
 
 $K/kernel: $(OBJS) $(KERN_LIBS) $K/kernel.ld $U/initcode

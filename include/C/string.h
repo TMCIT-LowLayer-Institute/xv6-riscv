@@ -69,8 +69,8 @@
 __BEGIN_DECLS
 typedef unsigned long size_t;
 
-void	*memset(void * const sp1, int const c, size_t n)
-    __attribute__ ((__bounded__(__buffer__,1,3)));
+void	*memset(void *dst0, int c0, size_t length)
+        __attribute__ ((__bounded__(__buffer__,1,3)));
 
 void	*memmove(void * const s, void const* const s0, size_t n)
 		__attribute__ ((__bounded__(__buffer__,1,3)))
