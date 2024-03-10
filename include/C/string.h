@@ -64,6 +64,8 @@
 #ifndef _STRING_H_
 #define	_STRING_H_
 
+#include <kernel/types.h>
+
 #include "assert.h"
 
 __BEGIN_DECLS
