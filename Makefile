@@ -89,7 +89,7 @@ $(LIBSA): $(LIBSA_OBJS)
 	$(AR) rcs $@ $^
 
 $(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
-	$(CC) $(CFLAGS) -I./include -I./ -Wno-attributes -c $< -o $@
+	$(CC) $(CFLAGS) -I./include -Wno-attributes -c $< -o $@
 
 $K/kernel: $(OBJS) $(KERN_LIBS) $K/kernel.ld $U/initcode
 	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS) $(KERN_LIBS)
