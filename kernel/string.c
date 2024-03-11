@@ -29,108 +29,181 @@
 
 #include "types.h"
 
-void*
-memset(void *dst, int c, uint n)
+#define wsize sizeof(u_long)
+#define wmask (wsize - 1)
+
+#define RETURN return (dst0)
+#define VAL c0
+#define WIDEVAL c
+
+void *
+memset(void *dst0, int c0, uint length)
 {
-  char *cdst = (char *) dst;
-  int i;
-  for(i = 0; i < n; i++){
-    cdst[i] = c;
-  }
-  return dst;
+        uint t = undefined;
+        ulong c = undefined;
+        uchar *dst = nullptr;
+
+        dst = dst0;
+
+        if (length < 3 * wsize) {
+                while (length != 0) {
+                        *dst++ = VAL;
+                        --length;
+                }
+                RETURN;
+        }
+
+        /* Align destination by filling in bytes. */
+        if ((t = (long)dst & wmask) != 0) {
+                t = wsize - t;
+                length -= t;
+                do {
+                        *dst++ = VAL;
+                } while (--t != 0);
+        }
+
+        /* Fill words. Length was >= 2*words so we know t >= 1 here. */
+        t = length / wsize;
+        do {
+                *(u_long *)(void *)dst = WIDEVAL;
+                dst += wsize;
+        } while (--t != 0);
+
+        /* Mop up trailing bytes, if any. */
+        t = length & wmask;
+        if (t != 0)
+                do {
+                        *dst++ = VAL;
+                } while (--t != 0);
+
+        RETURN;
+}
+
+/*
+ * Compare memory regions.
+ */
+int
+memcmp(const void *s1, const void *s2, uint n)
+{
+	if (n != 0) {
+		const unsigned char *p1 = s1, *p2 = s2;
+
+		do {
+			if (*p1++ != *p2++)
+				return (*--p1 - *--p2);
+		} while (--n != 0);
+	}
+	return (0);
+}
+
+/*
+ * This is designed to be small, not fast.
+ */
+void *
+memmove(void *s1, const void *s2, uint n)
+{
+	const char *f = s2;
+	char *t = s1;
+
+	if (f < t) {
+		f += n;
+		t += n;
+		while (n-- > 0)
+			*--t = *--f;
+	} else
+		while (n-- > 0)
+			*t++ = *f++;
+	return s1;
+}
+
+/*
+ * This is designed to be small, not fast.
+ */
+void *
+memcpy(void *s1, const void *s2, uint n)
+{
+	const char *f = s2;
+	char *t = s1;
+
+	while (n-- > 0)
+		*t++ = *f++;
+	return s1;
 }
 
 int
-memcmp(const void *v1, const void *v2, uint n)
+strncmp(const char *s1, const char *s2, uint n)
 {
-  const uchar *s1, *s2;
 
-  s1 = v1;
-  s2 = v2;
-  while(n-- > 0){
-    if(*s1 != *s2)
-      return *s1 - *s2;
-    s1++, s2++;
-  }
-
-  return 0;
+	if (n == 0)
+		return (0);
+	do {
+		if (*s1 != *s2++)
+			return (*(unsigned char *)s1 - *(unsigned char *)--s2);
+		if (*s1++ == 0)
+			break;
+	} while (--n != 0);
+	return (0);
 }
 
-void*
-memmove(void *dst, const void *src, uint n)
+/*
+ * Copy src to dst, truncating or null-padding to always copy n bytes.
+ * Return dst.
+ */
+char *
+strncpy(char *dst, const char *src, uint n)
 {
-  const char *s;
-  char *d;
+	if (n != 0) {
+		char *d = dst;
+		const char *s = src;
 
-  if(n == 0)
-    return dst;
-  
-  s = src;
-  d = dst;
-  if(s < d && s + n > d){
-    s += n;
-    d += n;
-    while(n-- > 0)
-      *--d = *--s;
-  } else
-    while(n-- > 0)
-      *d++ = *s++;
-
-  return dst;
+		do {
+			if ((*d++ = *s++) == 0) {
+				/* NUL pad the remaining n-1 bytes */
+				while (--n != 0)
+					*d++ = 0;
+				break;
+			}
+		} while (--n != 0);
+	}
+	return (dst);
 }
 
-// memcpy exists to placate GCC.  Use memmove.
-void*
-memcpy(void *dst, const void *src, uint n)
+/*
+ * Copy string src to buffer dst of size dsize.  At most dsize-1
+ * chars will be copied.  Always NUL terminates (unless dsize == 0).
+ * Returns strlen(src); if retval >= dsize, truncation occurred.
+ */
+uint
+safestrcpy(char *dst, const char *src, uint dsize)
 {
-  return memmove(dst, src, n);
+	const char *osrc = src;
+	uint nleft = dsize;
+
+	/* Copy as many bytes as will fit. */
+	if (nleft != 0) {
+		while (--nleft != 0) {
+			if ((*dst++ = *src++) == '\0')
+				break;
+		}
+	}
+
+	/* Not enough room in dst, add NUL and traverse rest of src. */
+	if (nleft == 0) {
+		if (dsize != 0)
+			*dst = '\0';		/* NUL-terminate dst */
+		while (*src++)
+			;
+	}
+
+	return(src - osrc - 1);	/* count does not include NUL */
 }
 
-int
-strncmp(const char *p, const char *q, uint n)
+uint
+strlen(const char *str)
 {
-  while(n > 0 && *p && *p == *q)
-    n--, p++, q++;
-  if(n == 0)
-    return 0;
-  return (uchar)*p - (uchar)*q;
+	const char *s = nullptr;
+
+	for (s = str; *s; ++s)
+		;
+	return (s - str);
 }
-
-char*
-strncpy(char *s, const char *t, int n)
-{
-  char *os;
-
-  os = s;
-  while(n-- > 0 && (*s++ = *t++) != 0)
-    ;
-  while(n-- > 0)
-    *s++ = 0;
-  return os;
-}
-
-// Like strncpy but guaranteed to NUL-terminate.
-char*
-safestrcpy(char *s, const char *t, int n)
-{
-  char *os;
-
-  os = s;
-  if(n <= 0)
-    return os;
-  while(--n > 0 && (*s++ = *t++) != 0)
-    ;
-  *s = 0;
-  return os;
-}
-
-int
-strlen(const char *s)
-{
-  int n;
-
-  for(n = 0; s[n]; n++)
-    ;
-  return n;
-}
-

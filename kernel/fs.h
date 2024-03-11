@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 TMCIT-LowLayer-Institute.. All rights reserved.
+ * Copyright (c) 2024 TMCIT-LowLayer-Institute. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,64 +27,69 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// On-disk file system format.
-// Both the kernel and user programs use this header file.
+/*
+ * On - disk file system format.
+ * Both the kernel and user programs use this header file.
+ */
 
 #include "types.h"
 
-constexpr auto ROOTINO = 1;   // root i-number
-#define BSIZE 1024  // block size
+constexpr uint ROOTINO = 1;     /* root i - number */
+constexpr uint BSIZE =  1024;   /* block size */
 
-// Disk layout:
-// [ boot block | super block | log | inode blocks |
-//                                          free bit map | data blocks]
-//
-// mkfs computes the super block and builds an initial file system. The
-// super block describes the disk layout:
+/* 
+ * Disk layout:
+ * [boot block | super block | log | inode blocks |
+ *                                         free bit map | data blocks]
+ *
+ * mkfs computes the super block and builds an initial file system.The
+ * super block describes the disk layout:
+ */
 struct superblock {
-  uint magic;        // Must be FSMAGIC
-  uint size;         // Size of file system image (blocks)
-  uint nblocks;      // Number of data blocks
-  uint ninodes;      // Number of inodes.
-  uint nlog;         // Number of log blocks
-  uint logstart;     // Block number of first log block
-  uint inodestart;   // Block number of first inode block
-  uint bmapstart;    // Block number of first free map block
+        uint magic;             /* Must be FSMAGIC */
+        uint size;              /* Size of file system image(blocks) */
+        uint nblocks;           /* Number of data blocks */
+        uint ninodes;           /* Number of inodes. */
+        uint nlog;              /* Number of log blocks */
+        uint logstart;          /* Block number of first log block */
+        uint inodestart;        /* Block number of first inode block */
+        uint bmapstart;         /* Block number of first free map block */
 };
 
-#define FSMAGIC 0x10203040
+constexpr uint FSMAGIC = 0x10203040;
 
-#define NDIRECT 12
-#define NINDIRECT (BSIZE / sizeof(uint))
-#define MAXFILE (NDIRECT + NINDIRECT)
+constexpr uint NDIRECT = 12;
+constexpr uint NINDIRECT = BSIZE / sizeof(uint);
+constexpr uint MAXFILE = NDIRECT + NINDIRECT;
 
-// On-disk inode structure
+/*
+ * On - disk inode structure
+ */
 struct dinode {
-  short type;           // File type
-  short major;          // Major device number (T_DEVICE only)
-  short minor;          // Minor device number (T_DEVICE only)
-  short nlink;          // Number of links to inode in file system
-  uint size;            // Size of file (bytes)
-  uint addrs[NDIRECT+1];   // Data block addresses
+        short type;                     /* File type */
+        short major;                    /* Major device number(T_DEVICE only) */
+        short minor;                    /* Minor device number(T_DEVICE only) */
+        short nlink;                    /* Number of links to inode in file system */
+        uint size;                      /* Size of file(bytes) */
+        uint addrs[NDIRECT + 1];        /* Data block addresses */
 };
 
-// Inodes per block.
-#define IPB           (BSIZE / sizeof(struct dinode))
+/* Inodes per block. */
+constexpr uint IPB = BSIZE / sizeof(struct dinode);
 
-// Block containing inode i
+/* Block containing inode i */
 #define IBLOCK(i, sb)     ((i) / IPB + sb.inodestart)
 
-// Bitmap bits per block
-#define BPB           (BSIZE*8)
+/* Bitmap bits per block */
+constexpr uint BPB = BSIZE * 8;
 
-// Block of free map containing bit for block b
+/* Block of free map containing bit for block */
 #define BBLOCK(b, sb) ((b)/BPB + sb.bmapstart)
 
-// Directory is a file containing a sequence of dirent structures.
-#define DIRSIZ 14
+/* Directory is a file containing a sequence of dirent structures. */
+constexpr uint DIRSIZ = 14;
 
 struct dirent {
-  ushort inum;
-  char name[DIRSIZ];
+        ushort inum;
+        char name[DIRSIZ];
 };
-

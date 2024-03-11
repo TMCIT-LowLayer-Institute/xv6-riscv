@@ -26,9 +26,10 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "types.h"
 
-#define O_RDONLY  0x000
-#define O_WRONLY  0x001
-#define O_RDWR    0x002
-#define O_CREATE  0x200
-#define O_TRUNC   0x400
+constexpr uint O_RDONLY = 0x000;
+constexpr uint O_WRONLY = 0x001;
+constexpr uint O_RDWR   = 0x002;
+constexpr uint O_CREATE = 0x200;
+constexpr uint O_TRUNC  = 0x400;

@@ -38,7 +38,6 @@
         # kernel.ld causes this code to start at 
         # a page boundary.
         #
-
 #include "riscv.h"
 #include "memlayout.h"
 

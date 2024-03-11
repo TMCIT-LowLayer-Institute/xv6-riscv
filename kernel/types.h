@@ -33,7 +33,8 @@
 #include "_null.h"
 
 
-typedef unsigned int   uint;typedef unsigned short ushort;
+typedef unsigned int   uint;
+typedef unsigned short ushort;
 typedef unsigned char  uchar;
 
 typedef unsigned char uint8;
@@ -53,7 +54,7 @@ typedef unsigned long	ulong;		/* Sys V compatibility */
 
 typedef uint64 pde_t;
 
-constexpr auto undefined = 0;
+constexpr uint undefined = 0;
 
 #ifdef KERNEL
 

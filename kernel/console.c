@@ -50,7 +50,7 @@
 #include "proc.h"
 
 constexpr auto BACKSPACE = 0x100;
-#define C(x)  ((x)-'@')  // Control-x
+#define C(x)  ((x)-'@')  /* Control-x */
 
 /*
  * send one character to the uart.
@@ -68,18 +68,19 @@ consputc(int const c)
         }
 }
 
+/* input */
+constexpr uint INPUT_BUF_SIZE = 128;
+
 struct cons{
         struct spinlock lock;
 
-        /* input */
-#define INPUT_BUF_SIZE 128
         char buf[INPUT_BUF_SIZE];
         uint r;  /* Read index */
         uint w;  /* Write index */
         uint e;  /* Edit index */
 };
 
-struct cons cons;
+struct cons cons = {};
 
 /*
  * user write()s to the console go here.
@@ -107,9 +108,9 @@ consolewrite(int const user_src, uint64 const src, int const n)
 int
 consoleread(int const user_dst, uint64 dst, int n)
 {
-        uint target = 0;
-        int c = 0;
-        char cbuf = 0;
+        uint target = undefined;
+        int c = undefined;
+        char cbuf = undefined;
 
         target = n;
         acquire(&cons.lock);

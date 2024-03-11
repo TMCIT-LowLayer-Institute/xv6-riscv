@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 TMCIT-LowLayer-Institute.. All rights reserved.
+ * Copyright (c) 2024 TMCIT-LowLayer-Institute. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,17 +26,18 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+typedef unsigned int uint ;
 
-#define NPROC        64  // maximum number of processes
-#define NCPU          8  // maximum number of CPUs
-#define NOFILE       16  // open files per process
-#define NFILE       100  // open files per system
-#define NINODE       50  // maximum number of active i-nodes
-#define NDEV         10  // maximum major device number
-#define ROOTDEV       1  // device number of file system root disk
-#define MAXARG       32  // max exec arguments
-#define MAXOPBLOCKS  10  // max # of blocks any FS op writes
-#define LOGSIZE      (MAXOPBLOCKS*3)  // max data blocks in on-disk log
-#define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
-#define FSSIZE       2000  // size of file system in blocks
-#define MAXPATH      128   // maximum file path name
+constexpr uint NPROC = 64;       /* maximum number of processes */
+constexpr uint NCPU = 8;         /* maximum number of CPUs */
+constexpr uint NOFILE = 16;      /* open files per process */
+constexpr uint NFILE = 100;      /* open files per system */
+constexpr uint NINODE = 50;      /* maximum number of active i-nodes */
+constexpr uint NDEV = 10;        /* maximum major device number */
+constexpr uint ROOTDEV = 1;      /* device number of file system root disk */
+constexpr uint MAXARG = 32;      /* max exec arguments */
+constexpr uint MAXOPBLOCKS = 10;         /* max # of blocks any FS op writes */
+constexpr uint LOGSIZE = MAXOPBLOCKS * 3;        /* max data blocks in on-disk log */
+constexpr uint NBUF = MAXOPBLOCKS * 3;   /* size of disk block cache */
+constexpr uint FSSIZE = 2000;    /* size of file system in blocks */
+constexpr uint MAXPATH = 128;    /* maximum file path name */

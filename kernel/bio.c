@@ -27,7 +27,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * Buffer cache.
  *
  * The buffer cache is a linked list of buf structures holding
@@ -54,14 +54,12 @@
 #include "buf.h"
 
 struct bcache {
-        struct spinlock lock;
+	struct spinlock lock;
 	struct buf buf[NBUF];
 
-	/* 
-	 * Linked list of all buffers, through prev/next. Sorted by how
+	/* Linked list of all buffers, through prev/next. Sorted by how
 	 * recently the buffer was used. head.next is most recent, head.prev
-	 * is least. 
-	 */
+	 * is least. */
 	struct buf head;
 };
 
