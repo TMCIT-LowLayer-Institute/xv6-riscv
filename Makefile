@@ -58,7 +58,7 @@ LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 
-CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=199209 -D__XSI_VISIBLE=1
+CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=199209 -D__XSI_VISIBLE=1 -I./
 
 CFLAGS += -MD
 CFLAGS += -mcmodel=medany

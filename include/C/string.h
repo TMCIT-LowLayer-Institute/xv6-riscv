@@ -64,22 +64,99 @@
 #ifndef _STRING_H_
 #define	_STRING_H_
 
-#include <kernel/types.h>
+#include <sys/types.h>
 
 #include "assert.h"
 
+#if __GNUC_PREREQ__(2, 96)
+#define	__malloc_like	__attribute__((__malloc__))
+#define	__pure		__attribute__((__const__))
+#else
+#define	__malloc_like
+#define	__pure
+#endif
+
+#ifndef _SIZE_T_DECLARED
+typedef	__size_t	size_t;
+#define	_SIZE_T_DECLARED
+#endif
+
 __BEGIN_DECLS
-typedef unsigned long size_t;
+void	*memccpy(void * __restrict, const void * __restrict, int, size_t);
+void	*memchr(const void *, int, size_t) __pure;
+void	*memrchr(const void *, int, size_t) __pure;
+int	 memcmp(const void *, const void *, size_t) __pure;
+void	*memcpy(void * __restrict, const void * __restrict, size_t);
+void	*memmem(const void *, size_t, const void *, size_t) __pure;
+void	*memmove(void *, const void *, size_t);
+void	*mempcpy(void * __restrict, const void * __restrict, size_t);
+void	*memset(void *, int, size_t);
+char	*stpcpy(char * __restrict, const char * __restrict);
+char	*stpncpy(char * __restrict, const char * __restrict, size_t);
+char	*strcasestr(const char *, const char *) __pure;
+char	*strcat(char * __restrict, const char * __restrict);
+char	*strchrnul(const char*, int) __pure;
+int	 strverscmp(const char *, const char *) __pure;
+int	 strcmp(const char *, const char *) __pure;
+int	 strcoll(const char *, const char *);
+char	*strcpy(char * __restrict, const char * __restrict);
+size_t	 strcspn(const char *, const char *) __pure;
+char	*strdup(const char *) __malloc_like;
+char	*strerror(int);
+int	 strerror_r(int, char *, size_t);
+size_t	 strlcat(char * __restrict, const char * __restrict, size_t);
+size_t	 strlcpy(char * __restrict, const char * __restrict, size_t);
+size_t	 strlen(const char *) __pure;
 
-void	*memset(void *dst0, int c0, size_t length)
-        __attribute__ ((__bounded__(__buffer__,1,3)));
+//void	 strmode(mode_t, char *);
 
-void	*memmove(void * const s, void const* const s0, size_t n)
-		__attribute__ ((__bounded__(__buffer__,1,3)))
-		__attribute__ ((__bounded__(__buffer__,2,3)));
+char	*strncat(char * __restrict, const char * __restrict, size_t);
+int	 strncmp(const char *, const char *, size_t) __pure;
+char	*strncpy(char * __restrict, const char * __restrict, size_t);
+char	*strndup(const char *, size_t) __malloc_like;
+size_t	 strnlen(const char *, size_t) __pure;
+char	*strnstr(const char *, const char *, size_t) __pure;
+char	*strpbrk(const char *, const char *) __pure;
+char	*strrchr(const char *, int) __pure;
+char	*strsep(char **, const char *);
+char	*strsignal(int);
+size_t	 strspn(const char *, const char *) __pure;
+char	*strstr(const char *, const char *) __pure;
+char	*strtok(char * __restrict, const char * __restrict);
+char	*strtok_r(char *, const char *, char **);
+size_t	 strxfrm(char * __restrict, const char * __restrict, size_t);
+
+#ifndef _SWAB_DECLARED
+#define _SWAB_DECLARED
+
+#ifndef _SSIZE_T_DECLARED
+typedef	__ssize_t	ssize_t;
+#define	_SSIZE_T_DECLARED
+#endif /* _SIZE_T_DECLARED */
+
+void	 swab(const void * __restrict, void * __restrict, ssize_t);
+
+int	 timingsafe_bcmp(const void *, const void *, size_t);
+int	 timingsafe_memcmp(const void *, const void *, size_t);
+
+
+
+#ifndef _RSIZE_T_DEFINED
+#define _RSIZE_T_DEFINED
+typedef size_t rsize_t;
+#endif
+
+#ifndef _ERRNO_T_DEFINED
+#define _ERRNO_T_DEFINED
+typedef int errno_t;
+#endif
+
+/* ISO/IEC 9899:2011 K.3.7.4.1.1 */
+errno_t memset_s(void *, rsize_t, int, rsize_t);
 
 extern char *index(char const* sp, int c);
 extern char *strchr(char const* sp, int c);
 __END_DECLS
 
+#endif 
 #endif /* _STRING_H_ */

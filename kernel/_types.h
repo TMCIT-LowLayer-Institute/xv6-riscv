@@ -60,7 +60,7 @@ typedef	unsigned short		__uint16_t;
 typedef	int			__int32_t;
 typedef	unsigned int		__uint32_t;
 /* LONGLONG */
-typedef	long long int 	__int64_t;
+typedef	long long int   	__int64_t;
 /* LONGLONG */
 typedef	unsigned long long	__uint64_t;
 
