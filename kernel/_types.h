@@ -31,10 +31,15 @@
  *	@(#)types.h	8.3 (Berkeley) 1/5/94
  *	@(#)ansi.h	8.2 (Berkeley) 1/4/94
  */
-#ifndef _TYPES_H
-#define _TYPES_H
 
-#ifdef KERNEL
+#ifndef _MACHINE__TYPES_H_
+#define _MACHINE__TYPES_H_
+
+#if defined(_KERNEL)
+typedef struct label_t {
+	long val[14];
+} label_t;
+#endif
 
 /*
  * _ALIGN(p) rounds p (pointer or byte index) up to a correctly-aligned
@@ -60,7 +65,7 @@ typedef	unsigned short		__uint16_t;
 typedef	int			__int32_t;
 typedef	unsigned int		__uint32_t;
 /* LONGLONG */
-typedef	long long int   	__int64_t;
+typedef	long long		__int64_t;
 /* LONGLONG */
 typedef	unsigned long long	__uint64_t;
 
@@ -125,6 +130,17 @@ typedef	__builtin_va_list	__va_list;
 typedef	char *			__va_list;
 #endif
 
-#endif /* KERNEL */
+/* Wide character support types */
+#ifndef __cplusplus
+#ifdef __WCHAR_UNSIGNED__
+typedef	unsigned int		__wchar_t;
+#else
+typedef	int			__wchar_t;
+#endif
+#endif
+typedef	int			__wint_t;
+typedef	int			__rune_t;
+typedef	void *			__wctrans_t;
+typedef	void *			__wctype_t;
 
-#endif /* TYPES_H */
+#endif	/* _MACHINE__TYPES_H_ */
