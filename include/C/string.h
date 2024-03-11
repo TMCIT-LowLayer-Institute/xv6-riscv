@@ -64,13 +64,13 @@
 #ifndef _STRING_H_
 #define	_STRING_H_
 
+#include <kernel/_null.h>
+
 #include <sys/types.h>
+#include <sys/cdefs.h>
 
 #include "assert.h"
-
-#ifndef __POSIX_VISIBLE
-#define __POSIX_VISIBLE 200809L
-#endif
+#include "strings.h"
 
 #ifndef	_SIZE_T_DEFINED_
 #define	_SIZE_T_DEFINED_
@@ -86,8 +86,11 @@ typedef void	*locale_t;
 
 __BEGIN_DECLS
 void	*memchr(void const* const, int, size_t);
-int	 memcmp(const void *, const void *, size_t);
-void	*memcpy(void *__restrict, const void *__restrict, size_t)
+int	 memcmp(void const* const s1, void const* const s2, size_t n);
+void	*memcpy(void *__restrict const, void const*__restrict const, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,3)))
+		__attribute__ ((__bounded__(__buffer__,2,3)));
+void	 bcopy(const void *, void *, size_t)
 		__attribute__ ((__bounded__(__buffer__,1,3)))
 		__attribute__ ((__bounded__(__buffer__,2,3)));
 void	*memmove(void *, const void *, size_t)
@@ -96,13 +99,13 @@ void	*memmove(void *, const void *, size_t)
 void	*memset(void *, int, size_t)
 		__attribute__ ((__bounded__(__buffer__,1,3)));
 char	*strcat(char *__restrict, const char *__restrict);
-char	*strchr(const char *, int);
+extern char *strchr(char const* sp, int c);
 int	 strcmp(const char *, const char *);
 int	 strcoll(const char *, const char *);
 char	*strcpy(char *__restrict, const char *__restrict);
 size_t	 strcspn(const char *, const char *);
 char	*strerror(int);
-size_t	 strlen(const char *);
+size_t	 strlen(char const* const str);
 char	*strncat(char *__restrict, const char *__restrict, size_t)
 		__attribute__ ((__bounded__(__string__,1,3)));
 int	 strncmp(const char *, const char *, size_t);
@@ -132,8 +135,8 @@ char	*strdup(const char *);
 #endif
 
 #if __POSIX_VISIBLE >= 200809
-char	*stpcpy(char *__restrict, const char *__restrict);
-char	*stpncpy(char *__restrict, const char *__restrict, size_t);
+char	*stpcpy(char *__restrict, char const*__restrict);
+char	*stpncpy(char *__restrict, char const*__restrict const, size_t);
 int	 strcoll_l(const char *, const char *, locale_t);
 char	*strerror_l(int, locale_t);
 char	*strndup(const char *, size_t);
@@ -147,11 +150,11 @@ size_t	 strxfrm_l(char *__restrict, const char *__restrict, size_t, locale_t)
 void	 explicit_bzero(void *, size_t)
 		__attribute__ ((__bounded__(__buffer__,1,2)));
 void	*memmem(const void *, size_t, const void *, size_t);
-void	*memrchr(const void *, int, size_t);
-char	*strcasestr(const char *, const char *);
-size_t	 strlcat(char *, const char *, size_t)
+void	*memrchr(void const* const, int const, size_t);
+char	*strcasestr(char const* const, char const* const);
+size_t	 strlcat(char *, char const*, size_t)
 		__attribute__ ((__bounded__(__string__,1,3)));
-size_t	 strlcpy(char *, const char *, size_t)
+size_t	 strlcpy(char *dst, char const* src, size_t dsize)
 		__attribute__ ((__bounded__(__string__,1,3)));
 void	 strmode(int, char *);
 char	*strsep(char **, const char *);
@@ -159,8 +162,8 @@ int	 timingsafe_bcmp(const void *, const void *, size_t);
 int	 timingsafe_memcmp(const void *, const void *, size_t);
 #endif
 
-extern char *index(char const* sp, int c);
-extern char *strchr(char const* sp, int c);
+//extern char *index(char const* sp, int c);
+//extern char *strchr(char const* sp, int c);
 __END_DECLS
 
 #endif /* _STRING_H_ */

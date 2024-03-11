@@ -1,17 +1,8 @@
-/*
- * Copyright 2024 TMCIT-LowLayer-Institute. All rights reserved.
- */
-/*	$OpenBSD: assert.h,v 1.15 2020/09/06 12:57:25 millert Exp $	*/
-/*	$NetBSD: assert.h,v 1.6 1994/10/26 00:55:44 cgd Exp $	*/
+/*	$OpenBSD: strings.h,v 1.6 2017/09/10 21:50:36 schwarze Exp $	*/
 
 /*-
- * Copyright (c) 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
- * (c) UNIX System Laboratories, Inc.
- * All or some portions of this file are derived from material licensed
- * to the University of California by American Telephone and Telegraph
- * Co. or Unix System Laboratories, Inc. and are reproduced herein with
- * the permission of UNIX System Laboratories, Inc.
+ * Copyright (c) 1990 The Regents of the University of California.
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,41 +28,61 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)assert.h	8.2 (Berkeley) 1/21/94
- *	@(#)cdefs.h	8.7 (Berkeley) 1/21/94
+ *	@(#)strings.h	5.8 (Berkeley) 5/15/90
  */
+
+#ifndef _STRINGS_H_
+#define	_STRINGS_H_
+
+#include <kernel/_types.h>
+
+#include <sys/types.h>
+
+#include "assert.h"
+#include "string.h"
 
 /*
- * Unlike other ANSI header files, <assert.h> may usefully be included
- * multiple times, with and without NDEBUG defined.
+ * POSIX mandates that certain string functions not present in ISO C
+ * be prototyped in strings.h.
  */
 
-#include <sys/cdefs.h>
-
-#undef assert
-#undef _assert
-
-#ifdef NDEBUG
-# define	assert(e)	((void)0)
-# define	_assert(e)	((void)0)
-#else
-# define	_assert(e)	assert(e)
-# if __ISO_C_VISIBLE >= 1999
-#  define	assert(e)	((e) ? (void)0 : __assert2(__FILE__, __LINE__, __func__, #e))
-# else
-#  define	assert(e)	((e) ? (void)0 : __assert(__FILE__, __LINE__, #e))
-# endif
+#ifndef	_SIZE_T_DEFINED_
+#define	_SIZE_T_DEFINED_
+typedef	__size_t	size_t;
 #endif
 
-#ifndef _ASSERT_H_
-#define _ASSERT_H_
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112
-#define static_assert _Static_assert
+#if __POSIX_VISIBLE >= 200809
+#ifndef	_LOCALE_T_DEFINED_
+#define	_LOCALE_T_DEFINED_
+typedef void	*locale_t;
+#endif
 #endif
 
 __BEGIN_DECLS
-__dead void __assert(const char *, int, const char *);
-__dead void __assert2(const char *, int, const char *, const char *);
-__END_DECLS
+#if __BSD_VISIBLE || (__XPG_VISIBLE >= 420 && __POSIX_VISIBLE <= 200112)
+/*
+ * The following functions were removed from IEEE Std 1003.1-2008
+ */
+int	 bcmp(const void *, const void *, size_t);
+//void	 bcopy(const void *, void *, size_t)
+//		__attribute__ ((__bounded__(__buffer__,1,3)))
+//		__attribute__ ((__bounded__(__buffer__,2,3)));
+void	 bzero(void *, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,2)));
+//char	*index(const char *, int);
+char	*rindex(const char *, int);
+extern char *index(char const* sp, int c);
 #endif
+
+//#if __XPG_VISIBLE >= 420
+int	 ffs(int);
+int	 strcasecmp(const char *, const char *);
+int	 strncasecmp(const char *, const char *, size_t);
+//#endif
+#if __POSIX_VISIBLE >= 200809
+int	 strcasecmp_l(const char *, const char *, locale_t);
+int	 strncasecmp_l(const char *, const char *, size_t, locale_t);
+#endif
+__END_DECLS
+
+#endif /* _STRINGS_H_ */
