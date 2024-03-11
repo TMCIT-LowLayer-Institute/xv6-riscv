@@ -5,6 +5,8 @@
  * Written by Dale Rahn.
  */
 
+#include <kernel/types.h>
+
 #include <C/string.h>
 
 /*

@@ -41,7 +41,7 @@
  * Copyright 2024 TMCIT-LowLayer-Institute. All rights reserved.
  */
 
-#include <C/string.h>
+#include <C/strings.h>
 
 /*
  * Return the ptr in sp at which the character c appears;
