@@ -68,95 +68,99 @@
 
 #include "assert.h"
 
-#if __GNUC_PREREQ__(2, 96)
-#define	__malloc_like	__attribute__((__malloc__))
-#define	__pure		__attribute__((__const__))
-#else
-#define	__malloc_like
-#define	__pure
+#ifndef __POSIX_VISIBLE
+#define __POSIX_VISIBLE 200809L
 #endif
 
-#ifndef _SIZE_T_DECLARED
+#ifndef	_SIZE_T_DEFINED_
+#define	_SIZE_T_DEFINED_
 typedef	__size_t	size_t;
-#define	_SIZE_T_DECLARED
+#endif
+
+#if __POSIX_VISIBLE >= 200809
+#ifndef _LOCALE_T_DEFINED_
+#define _LOCALE_T_DEFINED_
+typedef void	*locale_t;
+#endif
 #endif
 
 __BEGIN_DECLS
-void	*memccpy(void * __restrict, const void * __restrict, int, size_t);
-void	*memchr(const void *, int, size_t) __pure;
-void	*memrchr(const void *, int, size_t) __pure;
-int	 memcmp(const void *, const void *, size_t) __pure;
-void	*memcpy(void * __restrict, const void * __restrict, size_t);
-void	*memmem(const void *, size_t, const void *, size_t) __pure;
-void	*memmove(void *, const void *, size_t);
-void	*mempcpy(void * __restrict, const void * __restrict, size_t);
-void	*memset(void *, int, size_t);
-char	*stpcpy(char * __restrict, const char * __restrict);
-char	*stpncpy(char * __restrict, const char * __restrict, size_t);
-char	*strcasestr(const char *, const char *) __pure;
-char	*strcat(char * __restrict, const char * __restrict);
-char	*strchrnul(const char*, int) __pure;
-int	 strverscmp(const char *, const char *) __pure;
-int	 strcmp(const char *, const char *) __pure;
+void	*memchr(void const* const, int, size_t);
+int	 memcmp(const void *, const void *, size_t);
+void	*memcpy(void *__restrict, const void *__restrict, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,3)))
+		__attribute__ ((__bounded__(__buffer__,2,3)));
+void	*memmove(void *, const void *, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,3)))
+		__attribute__ ((__bounded__(__buffer__,2,3)));
+void	*memset(void *, int, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,3)));
+char	*strcat(char *__restrict, const char *__restrict);
+char	*strchr(const char *, int);
+int	 strcmp(const char *, const char *);
 int	 strcoll(const char *, const char *);
-char	*strcpy(char * __restrict, const char * __restrict);
-size_t	 strcspn(const char *, const char *) __pure;
-char	*strdup(const char *) __malloc_like;
+char	*strcpy(char *__restrict, const char *__restrict);
+size_t	 strcspn(const char *, const char *);
 char	*strerror(int);
-int	 strerror_r(int, char *, size_t);
-size_t	 strlcat(char * __restrict, const char * __restrict, size_t);
-size_t	 strlcpy(char * __restrict, const char * __restrict, size_t);
-size_t	 strlen(const char *) __pure;
+size_t	 strlen(const char *);
+char	*strncat(char *__restrict, const char *__restrict, size_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
+int	 strncmp(const char *, const char *, size_t);
+char	*strncpy(char *__restrict, const char *__restrict, size_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
+char	*strpbrk(const char *, const char *);
+char	*strrchr(const char *, int);
+size_t	 strspn(const char *, const char *);
+char	*strstr(const char *, const char *);
+char	*strtok(char *__restrict, const char *__restrict);
+char	*strtok_r(char *__restrict, const char *__restrict, char **__restrict);
+size_t	 strxfrm(char *__restrict, const char *__restrict, size_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
 
-//void	 strmode(mode_t, char *);
+#if __XPG_VISIBLE
+void	*memccpy(void * const __restrict dst, void const* const __restrict src, int const c, size_t n)
+        __attribute__ ((__bounded__(__buffer__,1,4)));
+#endif
 
-char	*strncat(char * __restrict, const char * __restrict, size_t);
-int	 strncmp(const char *, const char *, size_t) __pure;
-char	*strncpy(char * __restrict, const char * __restrict, size_t);
-char	*strndup(const char *, size_t) __malloc_like;
-size_t	 strnlen(const char *, size_t) __pure;
-char	*strnstr(const char *, const char *, size_t) __pure;
-char	*strpbrk(const char *, const char *) __pure;
-char	*strrchr(const char *, int) __pure;
-char	*strsep(char **, const char *);
+#if __POSIX_VISIBLE >= 200112
+int	 strerror_r(int, char *, size_t)
+	    __attribute__ ((__bounded__(__string__,2,3)));
+#endif
+
+#if __XPG_VISIBLE >= 420 || __POSIX_VISIBLE >= 200809
+char	*strdup(const char *);
+#endif
+
+#if __POSIX_VISIBLE >= 200809
+char	*stpcpy(char *__restrict, const char *__restrict);
+char	*stpncpy(char *__restrict, const char *__restrict, size_t);
+int	 strcoll_l(const char *, const char *, locale_t);
+char	*strerror_l(int, locale_t);
+char	*strndup(const char *, size_t);
+size_t	 strnlen(const char *, size_t);
 char	*strsignal(int);
-size_t	 strspn(const char *, const char *) __pure;
-char	*strstr(const char *, const char *) __pure;
-char	*strtok(char * __restrict, const char * __restrict);
-char	*strtok_r(char *, const char *, char **);
-size_t	 strxfrm(char * __restrict, const char * __restrict, size_t);
+size_t	 strxfrm_l(char *__restrict, const char *__restrict, size_t, locale_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
+#endif
 
-#ifndef _SWAB_DECLARED
-#define _SWAB_DECLARED
-
-#ifndef _SSIZE_T_DECLARED
-typedef	__ssize_t	ssize_t;
-#define	_SSIZE_T_DECLARED
-#endif /* _SIZE_T_DECLARED */
-
-void	 swab(const void * __restrict, void * __restrict, ssize_t);
-
+#if __BSD_VISIBLE
+void	 explicit_bzero(void *, size_t)
+		__attribute__ ((__bounded__(__buffer__,1,2)));
+void	*memmem(const void *, size_t, const void *, size_t);
+void	*memrchr(const void *, int, size_t);
+char	*strcasestr(const char *, const char *);
+size_t	 strlcat(char *, const char *, size_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
+size_t	 strlcpy(char *, const char *, size_t)
+		__attribute__ ((__bounded__(__string__,1,3)));
+void	 strmode(int, char *);
+char	*strsep(char **, const char *);
 int	 timingsafe_bcmp(const void *, const void *, size_t);
 int	 timingsafe_memcmp(const void *, const void *, size_t);
-
-
-
-#ifndef _RSIZE_T_DEFINED
-#define _RSIZE_T_DEFINED
-typedef size_t rsize_t;
 #endif
-
-#ifndef _ERRNO_T_DEFINED
-#define _ERRNO_T_DEFINED
-typedef int errno_t;
-#endif
-
-/* ISO/IEC 9899:2011 K.3.7.4.1.1 */
-errno_t memset_s(void *, rsize_t, int, rsize_t);
 
 extern char *index(char const* sp, int c);
 extern char *strchr(char const* sp, int c);
 __END_DECLS
 
-#endif 
 #endif /* _STRING_H_ */
