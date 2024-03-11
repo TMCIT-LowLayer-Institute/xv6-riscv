@@ -40,7 +40,8 @@
 #ifndef _SYS_TYPES_H_
 #define	_SYS_TYPES_H_
 
-#include <kernel/types.h>
+#include <kernel/_types.h>
+
 
 typedef	unsigned char	u_char;
 typedef	unsigned short	u_short;
@@ -109,5 +110,18 @@ typedef	__uint64_t	u_int64_t;
 /* quads, deprecated in favor of 64 bit int types */
 typedef	__int64_t	quad_t;
 typedef	__uint64_t	u_quad_t;
+
+/*
+ * The following types may be defined in multiple header files.
+ */
+#ifndef	_SIZE_T_DEFINED_
+#define	_SIZE_T_DEFINED_
+typedef	__size_t	size_t;
+#endif
+
+#ifndef	_SSIZE_T_DEFINED_
+#define	_SSIZE_T_DEFINED_
+typedef	__ssize_t	ssize_t;
+#endif
 
 #endif /* !_SYS_TYPES_H_ */
