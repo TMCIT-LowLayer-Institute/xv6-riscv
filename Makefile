@@ -58,7 +58,7 @@ LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 
-CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=199209 -D__XSI_VISIBLE=1 -I./
+CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -std=c2x -nostdlib -ffreestanding -DKERNEL -D__POSIX_VISIBLE=200809 -D__XPG_VISIBLE=420 -I./
 
 CFLAGS += -MD
 CFLAGS += -mcmodel=medany
@@ -77,7 +77,7 @@ endif
 LDFLAGS = -z max-page-size=4096
 
 # カーネルにリンクするライブラリの定義
-KERN_LIBS = $(LIBSA) $(STDLIB) $(STRING)
+KERN_LIBS = $(LIBSA) $(STDLIB) $(STRING) $(GEN)
 
 # LIBSAのビルドルール
 LIBSA_DIR = sys/lib/libsa
@@ -93,6 +93,11 @@ STDLIB_OBJS = $(patsubst $(STDLIB_DIR)/%.c, $(STDLIB_DIR)/%.o, $(STDLIB_SRCS))
 STRING_DIR = lib/libc/string
 STRING_SRCS = $(wildcard $(STRING_DIR)/*.c)
 STRING_OBJS = $(patsubst $(STRING_DIR)/%.c, $(STRING_DIR)/%.o, $(STRING_SRCS))
+
+# GENのビルドルール
+GEN_DIR = lib/libc/gen
+GEN_SRCS = $(wildcard $(GEN_DIR)/*.c)
+GEN_OBJS = $(patsubst $(GEN_DIR)/%.c, $(GEN_DIR)/%.o, $(GEN_SRCS))
 
 # LIBSA_OBJSをソースからオブジェクトに変換するルールの作成。
 $(LIBSA_DIR)/%.o: $(LIBSA_DIR)/%.c
@@ -124,6 +129,17 @@ $(STRING_DIR)/%.o: $(STRING_DIR)/%.c
 # STRINGターゲットを作り、STRING_OBJSからスタティックライブラリを生成。
 STRING = $(STRING_DIR)/string.a
 $(STRING): $(STRING_OBJS)
+	@echo "\033[0;34mCreating $@ library\033[0m"
+	$(AR) rcs $@ $^
+
+# GEN_OBJSをソースからオブジェクトに変換するルールの作成。
+$(GEN_DIR)/%.o: $(GEN_DIR)/%.c
+	@echo "\033[0;32mCompiling $< for GEN\033[0m"
+	$(CC) $(CFLAGS) -I./include -I./ -Wno-attributes -c $< -o $@
+
+# GENターゲットを作り、GEN_OBJSからスタティックライブラリを生成。
+GEN = $(GEN_DIR)/gen.a
+$(GEN): $(GEN_OBJS)
 	@echo "\033[0;34mCreating $@ library\033[0m"
 	$(AR) rcs $@ $^
 
@@ -182,7 +198,7 @@ endif
 
 # find_clangの出力を判定し、見つからない場合はデフォルトのパスを設定
 MKFS_CC := $(shell { ./find_clang || echo "/usr/local/bin/clang"; })
-MKFS_CFLAGS := -Werror -Wall -I. -std=c23
+MKFS_CFLAGS := -Werror -Wall -std=c2x
 
 mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 	$(MKFS_CC) $(MKFS_CFLAGS) -o mkfs/mkfs mkfs/mkfs.c
@@ -225,7 +241,8 @@ clean:
 	$(UPROGS) \
 	$(LIBSA_DIR)/*.d $(LIBSA_DIR)/*.o $(LIBSA_DIR)/*.a \
 	$(STDLIB_DIR)/*.d $(STDLIB_DIR)/*.o $(STDLIB_DIR)/*.a \
-	$(STRING_DIR)/*.d $(STRING_DIR)/*.o $(STRING_DIR)/*.a
+	$(STRING_DIR)/*.d $(STRING_DIR)/*.o $(STRING_DIR)/*.a \
+	$(GEN_DIR)/*.d $(GEN_DIR)/*.o  $(GEN_DIR)/*.a
 
 # try to generate a unique GDB port
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
